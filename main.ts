@@ -77,6 +77,7 @@ basic.forever(function on_forever3() {
         
         if (bouncer >= 150) {
             direction = -1
+            basic.pause(1000)
         } else if (bouncer <= 0) {
             direction = 1
         }

@@ -70,6 +70,7 @@ def on_forever3():
             bouncer += direction * speed * 30 / winning_score
         if bouncer >= 150:
             direction = -1
+            basic.pause(1000)
         elif bouncer <= 0:
             direction = 1
         if bouncer <= 10 and old_bouncer > 10 and direction == -1:
