@@ -19,6 +19,7 @@ def on_received_value(name, value):
     global acc
     if name == "acc":
         acc = value
+        serial.write_value("acc", acc)
 radio.on_received_value(on_received_value)
 
 def on_logo_pressed():
@@ -40,7 +41,6 @@ strip_score = neopixel.create(DigitalPin.P1, 150, NeoPixelMode.RGB)
 strip_bouncer = neopixel.create(DigitalPin.P2, 150, NeoPixelMode.RGB)
 direction = 1
 running = True
-started = False
 radio.set_group(77)
 winning_score = 20
 
@@ -51,19 +51,19 @@ def on_forever():
         strip_bouncer.show_rainbow(1, 360)
         strip_score.show_rainbow(1, 360)
         basic.show_string("Winner!")
+        while True:
+            strip_bouncer.rotate(2)
+            strip_score.rotate(-2)
+            strip_bouncer.show()
+            strip_score.show()
 basic.forever(on_forever)
-
-def on_forever2():
-    if not (running):
-        strip_bouncer.rotate(2)
-        strip_score.rotate(-2)
-        strip_bouncer.show()
-        strip_score.show()
-basic.forever(on_forever2)
 
 def on_forever3():
     global speed, bouncer, direction, acc_list, background_check, score
-    if running:
+    if not started:
+        strip_score.show_bar_graph(acc, 10)
+        strip_score.show()
+    elif running:
         speed = max(2, Math.idiv(score, 10))
         old_bouncer = bouncer
         if started:
@@ -102,7 +102,7 @@ def on_forever3():
 basic.forever(on_forever3)
 
 def on_forever4():
-    if running:
+    if running and started:
         strip_score.show_bar_graph(score, winning_score)
         strip_score.show()
 basic.forever(on_forever4)

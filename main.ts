@@ -20,6 +20,7 @@ radio.onReceivedValue(function on_received_value(name: string, value: number) {
     
     if (name == "acc") {
         acc = value
+        serial.writeValue("acc", acc)
     }
     
 })
@@ -41,7 +42,6 @@ let strip_score = neopixel.create(DigitalPin.P1, 150, NeoPixelMode.RGB)
 let strip_bouncer = neopixel.create(DigitalPin.P2, 150, NeoPixelMode.RGB)
 let direction = 1
 let running = true
-started = false
 radio.setGroup(77)
 winning_score = 20
 basic.forever(function on_forever() {
@@ -51,15 +51,12 @@ basic.forever(function on_forever() {
         strip_bouncer.showRainbow(1, 360)
         strip_score.showRainbow(1, 360)
         basic.showString("Winner!")
-    }
-    
-})
-basic.forever(function on_forever2() {
-    if (!running) {
-        strip_bouncer.rotate(2)
-        strip_score.rotate(-2)
-        strip_bouncer.show()
-        strip_score.show()
+        while (true) {
+            strip_bouncer.rotate(2)
+            strip_score.rotate(-2)
+            strip_bouncer.show()
+            strip_score.show()
+        }
     }
     
 })
@@ -68,7 +65,10 @@ basic.forever(function on_forever3() {
     let max_acc2: number;
     let reference_acc: number;
     
-    if (running) {
+    if (!started) {
+        strip_score.showBarGraph(acc, 10)
+        strip_score.show()
+    } else if (running) {
         speed = Math.max(2, Math.idiv(score, 10))
         old_bouncer = bouncer
         if (started) {
@@ -127,7 +127,7 @@ basic.forever(function on_forever3() {
     
 })
 basic.forever(function on_forever4() {
-    if (running) {
+    if (running && started) {
         strip_score.showBarGraph(score, winning_score)
         strip_score.show()
     }
